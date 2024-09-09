@@ -19,7 +19,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 
-module adder_N #(parameter N = 8)(s, c, a, b);
+module adder_n #(parameter N = 8)(s, c, a, b);
 	input [N-1:0] a, b;
 	output [N-1:0] s;
 	output c;

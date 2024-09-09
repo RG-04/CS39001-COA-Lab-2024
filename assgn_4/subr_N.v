@@ -19,7 +19,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 
-module subr_N #(parameter N = 8)(s, borr, a, b);
+module subr_n #(parameter N = 8)(s, borr, a, b);
 	input [N-1:0] a, b;
 	output [N-1:0] s;
 	output borr;
