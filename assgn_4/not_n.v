@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 04.09.2024 16:49:40
+// Create Date: 04.09.2024 16:20:08
 // Design Name: 
-// Module Name: bus_mux_16_1
+// Module Name: not8
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,15 +20,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module bus_mux_16_1 #(parameter N = 8)(sel, in, out);
-    input [3:0] sel;
-    input [15:0][N-1:0] in;
+module not_n #(parameter N = 8)(out, a);
+    input [N-1:0] a;
     output [N-1:0] out;
     
     genvar i;
     generate
-        for (i = 0; i < N; i = i + 1) begin : mux_gen
-            mux_16_1 m (.sel(sel), .in(in[i]), .out(out[i]));
+        for (i = 0; i < N; i = i + 1) begin : not_gen //
+            not n_gate(out[i], a[i]);
         end
     endgenerate
     

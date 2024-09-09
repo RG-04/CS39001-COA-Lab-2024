@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 04.09.2024 16:49:40
+// Create Date: 04.09.2024 16:09:17
 // Design Name: 
-// Module Name: bus_mux_16_1
+// Module Name: mult8
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,16 +20,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module bus_mux_16_1 #(parameter N = 8)(sel, in, out);
-    input [3:0] sel;
-    input [15:0][N-1:0] in;
-    output [N-1:0] out;
+module mult_n #(parameter N = 8)(s, a, b, N);
+    input [N-1:0] a, b;
+    output [N-1:0] s;
     
-    genvar i;
-    generate
-        for (i = 0; i < N; i = i + 1) begin : mux_gen
-            mux_16_1 m (.sel(sel), .in(in[i]), .out(out[i]));
-        end
-    endgenerate
-    
+    assign s = a * b;
 endmodule
