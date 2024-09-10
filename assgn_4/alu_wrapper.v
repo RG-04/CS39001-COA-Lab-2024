@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 04.09.2024 16:06:36
+// Create Date: 10.09.2024 16:42:35
 // Design Name: 
-// Module Name: subr8
+// Module Name: alu_wrapper
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,13 +20,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module subr8(s, borr, a, b);
-    input [7:0] a, b;
-    output [7:0] s;
-    output borr;
-    
-    parameter bin = 0;
-    
-    bit_subr_8 subr(s, borr, a, b, bin);
-    
+module alu_wrapper(out, a, b, sel);
+  input [5:0] a, b;
+  input [3:0] sel;
+  output [5:0] out;
+  
+  alu_top #(6) altop (out, a, b, sel);
 endmodule

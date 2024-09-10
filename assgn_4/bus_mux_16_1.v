@@ -22,7 +22,7 @@
 
 module bus_mux_16_1 #(parameter N = 8)(sel, in, out);
     input [3:0] sel;
-    input [15:0][N-1:0] in;
+    input [15:0] in [N-1:0];
     output [N-1:0] out;
     
     genvar i;

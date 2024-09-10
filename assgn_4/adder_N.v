@@ -24,12 +24,13 @@ module adder_n #(parameter N = 8)(s, c, a, b);
 	output [N-1:0] s;
 	output c;
 	
-	wire [N-2:0] carry;
+	wire [N-1:0] carry;
+	assign c = carry[N-1];
 
     genvar i;
     generate
         for (i = 0; i < N; i = i + 1) begin: full_adder_gen
-            full_adder fa (.s(s[i]), .c( i == N-1 ? c : carry[i]), .a(a[i]), .b(b[i]), .cin( i == 0 ? 0 : carry[i-1]));
+            full_adder fa (.s(s[i]), .c(carry[i]), .a(a[i]), .b(b[i]), .cin( i == 0 ? 1'b0 : carry[i-1]));
         end
     endgenerate
 	

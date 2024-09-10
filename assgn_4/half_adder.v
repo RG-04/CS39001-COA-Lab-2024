@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 04.09.2024 14:29:58
+// Create Date: 10.09.2024 14:36:04
 // Design Name: 
-// Module Name: adder
+// Module Name: half_adder
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,10 +20,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module adder8(s, c, a, b);
-    input [7:0] a, b;
-    output [7:0] s;
-    output c;
-    parameter cin = 0;
-    bit_adder_8 addr(s, c, a, b, cin);
+module half_adder(s,c,a,b);
+    input a,b;
+    output s,c;
+
+    and a0(c, a, b);
+    xor x0(s, a, b);
+
+
 endmodule

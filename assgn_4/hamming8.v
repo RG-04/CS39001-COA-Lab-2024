@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module hamming8(a, out);
+module hamming8(out, a);
     input [7:0] a;
     output [7:0] out;
 

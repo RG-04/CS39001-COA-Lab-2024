@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module mult_n #(parameter N = 8)(s, a, b, N);
+module mult_n #(parameter N = 8)(s, a, b);
     input [N-1:0] a, b;
     output [N-1:0] s;
     

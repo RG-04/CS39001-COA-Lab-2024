@@ -27,8 +27,8 @@ module mux_4_1(sel, in, out);
     
     wire mo0, mo1;
     
-    mux_2_1 m0 (.sel(sel[0]), .i0(in[0]), .i1(in[1]), .o(mo0));
-    mux_2_1 m1 (.sel(sel[0]), .i0(in[2]), .i1(in[3]), .o(mo1));
-    mux_2_1 final (.sel(sel[1]), .i0(mo0), .i1(mo1), .o(out));
+    mux_2_1 m0 (.sel(sel[0]), .i0(in[0]), .i1(in[1]), .out(mo0));
+    mux_2_1 m1 (.sel(sel[0]), .i0(in[2]), .i1(in[3]), .out(mo1));
+    mux_2_1 final (.sel(sel[1]), .i0(mo0), .i1(mo1), .out(out));
     
 endmodule

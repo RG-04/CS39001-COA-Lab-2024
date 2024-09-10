@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module and_n #(parameter N = 8)(out, a, b, N);
+module and_n #(parameter N = 8)(out, a, b);
     input [N-1:0] a, b;
     output [N-1:0] out;
     
