@@ -45,7 +45,7 @@ module shift_left #(parameter N = 8)(out, a, b);
             end
         end
 
-        for (l = 0; l < 8; l = l + 1) begin: mux_level_3_gen
+        for (l = 0; l < N; l = l + 1) begin: mux_level_3_gen
             mux_2_1 muxlf (.sel(or_out[0]), .i0(level_mux_out[$clog2(N)][l]), .i1(1'b0), .out(out[l]));
         end
     endgenerate
