@@ -9,9 +9,9 @@ module cond_branch #(parameter N = 32) (A, cond, branch);
         case (cond)
             3'b000: branch <= 0;
             3'b100: branch <= 1;
-            3'b001: branch <= A < 0;
-            3'b010: branch <= A > 0;
-            3'b011: branch <= A == 0;
+            3'b001: branch <= ~A[N-1];
+            3'b010: branch <= ~A[N-1];
+            3'b011: branch <= ~(|A);
             default: branch <= 0;
         endcase
     end

@@ -61,7 +61,11 @@ module processor_top #(parameter N = 32) (clk, rst);
     assign regWrData = regISel[1] ? l1_mux_out_2 : l1_mux_out_1;
 
     // Memory Unit
-    // TO DO: Implement the memory unit using BRAM
-    // TO DO: Implement the instruction memory using BRAM
+
+    // Data Memory
+    data_mem #(10, N) data_mem_unit (~clk, memWr, memRd, ALU_OUT, MEM_OUT);
+
+    // Instruction Memory
+    instruction_mem #(10, N) instruction_mem_unit (~clk, 0, 1, PC, IR);
 
 endmodule
