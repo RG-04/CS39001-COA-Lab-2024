@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
-module control (clk, rst, opcode, func, brOp, aluOp, BSel, wrRegSel, memRd, memWr, regWr, regRd, regISel, sgnExt, isMV, incPC);
-    input clk, rst;
+module control (clk, rst, unstop, opcode, func, brOp, aluOp, BSel, wrRegSel, memRd, memWr, regWr, regRd, regISel, sgnExt, isMV, incPC);
+    input clk, rst, unstop;
     input [5:0] opcode;
     input [3:0] func;
 
@@ -16,6 +16,7 @@ module control (clk, rst, opcode, func, brOp, aluOp, BSel, wrRegSel, memRd, memW
     wire primary_BSel, primary_wrRegSel, primary_memRd, primary_memWr, primary_regWr, primary_sgnExt, primary_isMV;
 
     wire I0, I17, I18, I19, I28; 
+    wire isHalt = (opcode == 6'b011110) & (~unstop);
 
     assign I0 = (opcode == 6'b000000);
     assign I17 = (opcode == 6'b010001);
@@ -40,7 +41,9 @@ module control (clk, rst, opcode, func, brOp, aluOp, BSel, wrRegSel, memRd, memW
 
     always @(posedge clk) begin
         if (rst) begin
-            state <= 3'b000;
+            state <= 3'b111;
+        end else if (unstop) begin
+            state <= 3'b101;
         end
         else begin
             state <= next_state;
@@ -50,31 +53,41 @@ module control (clk, rst, opcode, func, brOp, aluOp, BSel, wrRegSel, memRd, memW
     always @ (state) begin
         case (state)
             3'b000: begin
-                next_state = 3'b001;
+                next_state <= isHalt ? 3'b110 : 3'b001;
                 // READ INSTRUCTION FROM MEMORY
             end
             3'b001: begin
-                next_state = 3'b010;
+                next_state <= isHalt ? 3'b110 : 3'b010;
                 // DECODE INSTRUCTION
             end
             3'b010: begin
-                next_state = 3'b011;
+                next_state <= isHalt ? 3'b110 : 3'b011;
                 // EXECUTE INSTRUCTION
             end
             3'b011: begin
-                next_state = 3'b100;
+                next_state <= isHalt ? 3'b110 : 3'b100;
                 // MEMORY ACCESS
             end
             3'b100: begin
-                next_state = 3'b101;
+                next_state <= isHalt ? 3'b110 : 3'b101;
                 // MEMORY ACCESS
             end
             3'b101: begin
-                next_state = 3'b000;
+                next_state <= isHalt ? 3'b110 : 3'b000;
                 // WRITE BACK
                 // INC PC
             end
-            default: 
+            3'b110: begin
+                next_state <= 3'b110;
+                // HALT STATE
+            end
+            3'b111: begin
+                next_state <= 3'b000;
+                // RESET STATE
+            end
+            default: begin
+                next_state <= 3'b000;
+            end
         endcase
     end 
 

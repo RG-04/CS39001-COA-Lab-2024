@@ -1,8 +1,8 @@
 `timescale 1ns/1ps
 
-module processor_top #(parameter N = 32) (clk, rst);
+module processor_top #(parameter N = 32) (clk, rst, unstop);
 
-    input clk, rst;
+    input clk, rst, unstop;
 
     wire [N-1:0] NPC, PC, PC_INP;
     wire [N-1:0] IR;
@@ -21,7 +21,7 @@ module processor_top #(parameter N = 32) (clk, rst);
     wire BSel, wrRegSel, memRd, memWr, regWr, regRd, sgnExt, isMV, incPC;
 
     // Control Unit
-    control #(N) control_unit (clk, rst, IR[31:26], IR[3:0], brOp, aluOp, BSel, wrRegSel, memRd, memWr, regWr, regRd, regISel, sgnExt, isMV, incPC);
+    control #(N) control_unit (clk, rst, unstop, IR[31:26], IR[3:0], brOp, aluOp, BSel, wrRegSel, memRd, memWr, regWr, regRd, regISel, sgnExt, isMV, incPC);
 
     // Program Counter
     program_counter #(N) pc_block (clk, rst, 1, PC, PC_INP);
