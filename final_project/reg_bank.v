@@ -1,12 +1,18 @@
 `timescale 1ns / 1ps
 
 module reg_bank #(parameter N = 32) (clk, read1, read2, write, dest, w_data, src1, r_data1, src2, r_data2);
-    input read1, read2, write;
+    input read1, read2, write, clk;
     input [4:0] dest, src1, src2;
     input [N-1:0] w_data;
-    output [N-1:0] r_data1, r_data2;
+    output reg [N-1:0] r_data1, r_data2;
 
     reg [N-1:0] reg_file [15:0];
+
+    initial begin
+        for (int i = 0; i < N; i = i + 1) begin
+            reg[i] = 0;
+        end
+    end
 
     always @(posedge clk) begin
         reg_file[0] <= 0;

@@ -63,9 +63,9 @@ module processor_top #(parameter N = 32) (clk, rst, unstop);
     // Memory Unit
 
     // Data Memory
-    data_mem #(10, N) data_mem_unit (~clk, memWr, memRd, ALU_OUT, MEM_OUT);
+    data_mem #(10, N) data_mem_unit (~clk, ALU_OUT[9:0], memWr, memRd, B, MEM_OUT);
 
     // Instruction Memory
-    instruction_mem #(10, N) instruction_mem_unit (~clk, 0, 1, PC, IR);
+    instruction_mem #(10, N) instruction_mem_unit (~clk, PC[9:0], 0, 1, 32'b0, IR);
 
 endmodule

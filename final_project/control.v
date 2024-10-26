@@ -8,7 +8,7 @@ module control (clk, rst, unstop, opcode, func, brOp, aluOp, BSel, wrRegSel, mem
     output [2:0] brOp;
     output [3:0] aluOp;
     output [1:0] regISel;
-    output BSel, wrRegSel, memRd, memWr, regWr, sgnExt, isMV, incPC;
+    output BSel, wrRegSel, memRd, memWr, regWr, regRd, sgnExt, isMV, incPC;
 
     wire [2:0] primary_brOp;
     wire [3:0] primary_aluOp;
