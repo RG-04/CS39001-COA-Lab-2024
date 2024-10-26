@@ -8,17 +8,15 @@ module instruction_mem #(parameter BRAM_ADDR_WIDTH = 10, BRAM_DATA_WIDTH = 32) (
     output reg [BRAM_DATA_WIDTH-1:0] bram_data_out;
 
     reg [BRAM_DATA_WIDTH-1:0] mem [(1<<BRAM_ADDR_WIDTH)-1:0];
-
+    integer i;
     initial begin
-        $loadmemb("instruction.mem", mem, 0, (1<<BRAM_ADDR_WIDTH)-1);
-        for (int i = 0; i < (1<<BRAM_ADDR_WIDTH); i = i + 1) begin
-            $monitor("mem[%d] = %d at %d", i, mem[i], $time);
-        end
+        $monitor("ins mem[%d] = %d at %d", 0, mem[0], $time);
+        $readmemb("instructions.mem", mem);
     end
 
     always @(posedge clk) begin
         // if (wr_n == 1'b0) mem[(addr)] <= bram_data_in;
-        if (rd_n == 1'b0) bram_data_out <= mem[addr];
+        if (rd_n == 1'b1) bram_data_out <= mem[addr];
     end
 
 endmodule

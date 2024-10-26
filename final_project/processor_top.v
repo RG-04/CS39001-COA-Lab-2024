@@ -13,6 +13,11 @@ module processor_top #(parameter N = 32) (clk, rst, unstop);
 
     wire [N-1:0] regWrData;
     wire [4:0] regWrDest;
+    
+    initial begin
+        $monitor("IR = %b at time %d", IR, $time);
+        $monitor("MemWr = %b at time %d", memWr, $time);
+    end
 
     // control signals
     wire [2:0] brOp;
@@ -21,10 +26,10 @@ module processor_top #(parameter N = 32) (clk, rst, unstop);
     wire BSel, wrRegSel, memRd, memWr, regWr, regRd, sgnExt, isMV, incPC;
 
     // Control Unit
-    control #(N) control_unit (clk, rst, unstop, IR[31:26], IR[3:0], brOp, aluOp, BSel, wrRegSel, memRd, memWr, regWr, regRd, regISel, sgnExt, isMV, incPC);
+    control control_unit (clk, rst, unstop, IR[31:26], IR[3:0], brOp, aluOp, BSel, wrRegSel, memRd, memWr, regWr, regRd, regISel, sgnExt, isMV, incPC);
 
     // Program Counter
-    program_counter #(N) pc_block (clk, rst, 1, PC, PC_INP);
+    program_counter #(N) pc_block (clk, rst, incPC, PC, PC_INP);
     program_counter_inc #(N) pc_inc (clk, PC, NPC);
 
     // Sign Extend Unit
@@ -66,6 +71,6 @@ module processor_top #(parameter N = 32) (clk, rst, unstop);
     data_mem #(10, N) data_mem_unit (~clk, ALU_OUT[9:0], memWr, memRd, B, MEM_OUT);
 
     // Instruction Memory
-    instruction_mem #(10, N) instruction_mem_unit (~clk, PC[9:0], 0, 1, 32'b0, IR);
+    instruction_mem #(10, N) instruction_mem_unit (~clk, PC[9:0], 1'b0, 1'b1, 32'b0, IR);
 
 endmodule
