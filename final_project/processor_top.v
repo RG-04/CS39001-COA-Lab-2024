@@ -71,6 +71,6 @@ module processor_top #(parameter N = 32) (clk, rst, unstop);
     data_mem #(10, N) data_mem_unit (~clk, ALU_OUT[9:0], memWr, memRd, B, MEM_OUT);
 
     // Instruction Memory
-    instruction_mem #(10, N) instruction_mem_unit (~clk, PC[9:0], 1'b0, 1'b1, 32'b0, IR);
+    instruction_mem #(10, N) instruction_mem_unit (~clk, PC[9:0], 1'b0, 1'b1, IR);
 
 endmodule
