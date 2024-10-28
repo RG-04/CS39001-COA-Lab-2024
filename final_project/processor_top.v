@@ -1,13 +1,16 @@
 `timescale 1ns/1ps
 
-module processor_top #(parameter N = 32) (clk, rst, unstop);
+module processor_top #(parameter N = 32) (clk, rst, unstop, reg_addr, reg_data_output);
 
     input clk, rst, unstop;
+    input [3:0] reg_addr;
+    output [(N / 2)-1:0] reg_data_output;
 
     wire [N-1:0] NPC, PC, PC_INP;
     wire [N-1:0] IR;
     wire [N-1:0] sgn_extend;
     wire [N-1:0] A, B, ALU_OUT;
+    wire [N-1:0] reg_data;
 
     wire [N-1:0] MEM_OUT;
 
@@ -39,9 +42,12 @@ module processor_top #(parameter N = 32) (clk, rst, unstop);
     assign sgn_extend = sgnExt ? sgn_extend_26 : sgn_extend_16;
 
     // Regbank
-    reg_bank #(N) reg_bank_unit (clk, regRd, regRd, regWr, regWrDest, regWrData, IR[25:21], A, IR[20:16], B);
+    reg_bank #(N) reg_bank_unit (clk, regRd, regRd, regWr, regWrDest, regWrData, IR[25:21], A, IR[20:16], B, reg_addr, reg_data);
     // Selecting the write destination register
     assign regWrDest = wrRegSel ? IR[15:11] : IR[20:16];
+
+    // Display the output (regiser data)
+    display_output #(N) display_output_unit (clk, reg_data, reg_data_output);
 
     // Selecting the Inputs to the ALU
     wire [N-1:0] A_input, B_input;

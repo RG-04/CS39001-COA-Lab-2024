@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module reg_bank #(parameter N = 32) (clk, read1, read2, write, dest, w_data, src1, r_data1, src2, r_data2);
+module reg_bank #(parameter N = 32) (clk, read1, read2, write, dest, w_data, src1, r_data1, src2, r_data2, src3, r_data3);
     input read1, read2, write, clk;
     input [4:0] dest, src1, src2;
     input [N-1:0] w_data;
@@ -31,6 +31,7 @@ module reg_bank #(parameter N = 32) (clk, read1, read2, write, dest, w_data, src
        if (read2) begin
            r_data2 <= reg_file[src2[3:0]];
        end
+       r_data3 <= reg_file[src3[3:0]];
     end
 
 endmodule
