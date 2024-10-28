@@ -32,21 +32,21 @@ module alu_top #(parameter N = 32) (out, a, b, sel);
   wire [N-1:0] tmp_0, tmp_1, tmp_2, tmp_3, tmp_4, tmp_5, tmp_6, tmp_7,
     tmp_8, tmp_9, tmp_10, tmp_11, tmp_12, tmp_13, tmp_14, tmp_15;
  
-  not_n #(N) not_ (tmp_0, a);
-  adder_n #(N) add_ (tmp_1, c, a, b);
-  subr_n #(N) sub_ (tmp_2, borr, a, b);
-  subr_n #(N) sub_4 (tmp_3, borr4, a, 32'b100);
+  adder_n #(N) add_ (tmp_0, c, a, b);
+  subr_n #(N) sub_ (tmp_1, borr, a, b);
+  sgt_n #(N) sgt_ (tmp_2, a, b);/////
+  slt_n #(N) slt_ (tmp_3, a, b);/////
   and_n #(N) and_ (tmp_4, a, b);
   or_n #(N) or_ (tmp_5, a, b);
   xor_n #(N) xor_ (tmp_6, a, b);
-  nor_n #(N) nor_ (tmp_7, a, b);/////
-  adder_n #(N) add_4 (tmp_8, c4, a, 32'b100);
-  shift_left #(N) sll_ (tmp_9, a, b);
-  shift_right_log #(N) srl_ (tmp_10, a, b);
-  shift_right_ar #(N) sra_ (tmp_11, a, b);
-  slt_n #(N) slt_ (tmp_12, a, b);/////
-  sgt_n #(N) sgt_ (tmp_13, a, b);/////
-  lui_n #(N) lui_ (tmp_14, a);/////
+  not_n #(N) not_ (tmp_7, a);
+  nor_n #(N) nor_ (tmp_8, a, b);/////
+  lui_n #(N) lui_ (tmp_9, a);/////
+  shift_left #(N) sll_ (tmp_10, a, b);
+  shift_right_log #(N) srl_ (tmp_11, a, b);
+  shift_right_ar #(N) sra_ (tmp_12, a, b);
+  adder_n #(N) add_4 (tmp_13, c4, a, 32'b100);
+  subr_n #(N) sub_4 (tmp_14, borr4, a, 32'b100);
   hamming32 ham_ (tmp_15, {{(32 - N){1'b0}}, a});
  
 //  bus_mux_16_1 #(N) mx (sel, tmp, out);

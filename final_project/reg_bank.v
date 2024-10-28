@@ -7,14 +7,12 @@ module reg_bank #(parameter N = 32) (clk, read1, read2, write, dest, w_data, src
     output reg [N-1:0] r_data1, r_data2;
 
     reg [N-1:0] reg_file [15:0];
-    integer i;
-    
+
     initial begin
-        for (i = 0; i < 16; i = i+1) begin
-            reg_file[i] = 0;
-        end        
+        for (int i = 0; i < N; i = i + 1) begin
+            reg[i] = 0;
+        end
     end
-   
 
     always @(posedge clk) begin
         reg_file[0] <= 0;
