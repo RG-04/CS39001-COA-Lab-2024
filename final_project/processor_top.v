@@ -49,7 +49,7 @@ module processor_top #(parameter N = 32) (clk, rst, unstop);
 
     // Branch Unit
     wire branch;
-    cond_branch #(N) branch_unit (A_input, brOp, branch);
+    cond_branch #(N) branch_unit (A, brOp, branch);
     assign PC_INP = branch ? ALU_OUT : NPC;
 
     // Write back Unit
