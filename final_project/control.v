@@ -26,18 +26,23 @@ module control (clk, rst, unstop, opcode, func, brOp, aluOp, BSel, wrRegSel, mem
 
 
     assign primary_brOp = opcode[5] ? opcode[2:0] : 3'b000;
-    assign primary_aluOp = I0 ? func : opcode[3:0];
+    assign primary_aluOp = (I18 | I19 | opcode[5]) ? 4'b0001 : I0 ? func : opcode[3:0];
     assign primary_regISel = {I17 | I28, I17 | I18}; 
     assign primary_BSel = I0 | I28;
     assign primary_wrRegSel = I0 | I28;
     assign primary_memRd = I18;
     assign primary_memWr = I19;
     assign primary_regWr = (~opcode[4]) | I17 | I18 | I28;
-    assign primary_sgnExt = opcode[5] | (opcode[4] & opcode[3]);
+    assign primary_sgnExt = (opcode[5] & (~opcode[2])) | (opcode[4] & opcode[3]);
     assign primary_isMV = I28;
 
     // designing the fsm for the control unit
     reg [2:0] state, next_state;
+    
+    initial begin
+        state <= 3'b0;
+        next_state <= 3'b0;
+    end
 
     always @(posedge clk) begin
         if (rst) begin
