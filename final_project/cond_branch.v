@@ -10,14 +10,14 @@ module cond_branch #(parameter N = 32) (A, cond, branch);
     end
     
     wire po = (|A);
-    wire msb = ~A[N-1];
+    wire msb = A[N-1];
 
     always @(*) begin
         case (cond)
             3'b000: branch <= 0;
             3'b100: branch <= 1;
             3'b001: branch <= msb;
-            3'b010: branch <= msb & po;
+            3'b010: branch <= (~msb) & po;
             3'b011: branch <= ~po;
             default: branch <= 0;
         endcase
