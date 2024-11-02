@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
-module processor_top #(parameter N = 32) (clk, rst, unstop, reg_addr, reg_data_output);
-
+module processor_top (clk, rst, unstop, reg_addr, reg_data_output);
+    parameter N = 32;
     input clk, rst, unstop;
     input [3:0] reg_addr;
     output [(N / 2)-1:0] reg_data_output;
@@ -42,12 +42,12 @@ module processor_top #(parameter N = 32) (clk, rst, unstop, reg_addr, reg_data_o
     assign sgn_extend = sgnExt ? sgn_extend_26 : sgn_extend_16;
 
     // Regbank
-    reg_bank #(N) reg_bank_unit (clk, regRd, regRd, regWr, regWrDest, regWrData, IR[25:21], A, IR[20:16], B, reg_addr, reg_data);
+    reg_bank #(N) reg_bank_unit (clk, rst, regRd, regRd, regWr, regWrDest, regWrData, IR[25:21], A, IR[20:16], B, {0,reg_addr}, reg_data);
     // Selecting the write destination register
     assign regWrDest = wrRegSel ? IR[15:11] : IR[20:16];
 
     // Display the output (regiser data)
-    display_output #(N) display_output_unit (clk, reg_data, reg_data_output);
+    display_output #(N) display_output_unit (clk, rst, reg_data, reg_data_output);
 
     // Selecting the Inputs to the ALU
     wire [N-1:0] A_input, B_input;
@@ -74,9 +74,10 @@ module processor_top #(parameter N = 32) (clk, rst, unstop, reg_addr, reg_data_o
     // Memory Unit
 
     // Data Memory
-    data_mem #(10, N) data_mem_unit (~clk, ALU_OUT[9:0], memWr, memRd, B, MEM_OUT);
-
+//    data_mem #(10, N) data_mem_unit (~clk, ALU_OUT[9:0], memWr, memRd, B, MEM_OUT);
+    wire dmu_ena = memRd | memWr;
+    data_mem_gen data_mem_unit(.clka(clk), .addra(ALU_OUT[6:0]), .dina(B), .douta(MEM_OUT), .ena(dmu_ena), .wea(memWr));
     // Instruction Memory
-    instruction_mem #(10, N) instruction_mem_unit (~clk, PC[9:0], 1'b0, 1'b1, 32'b0, IR);
-
+//    instruction_mem #(10, N) instruction_mem_unit (~clk, PC[9:0], 1'b0, 1'b1, 32'b0, IR);
+    blk_mem_gen_0 instruction_mem_unit(.clka(~clk), .addra(PC[7:0]), .douta(IR));
 endmodule

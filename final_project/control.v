@@ -40,22 +40,21 @@ module control (clk, rst, unstop, opcode, func, brOp, aluOp, BSel, wrRegSel, mem
     reg [2:0] state, next_state;
     
     initial begin
-        state <= 3'b0;
-        next_state <= 3'b0;
+//        state <= 3'b0;
+//        next_state <= 3'b0;
+        $monitor("State : %b, next_state: %b at %d, isHalt - %b", state, next_state, $time, isHalt);
     end
 
-    always @(posedge clk) begin
+    always @(posedge clk or posedge rst) begin
         if (rst) begin
             state <= 3'b111;
-        end else if (unstop) begin
-            state <= 3'b101;
-        end
+        end 
         else begin
             state <= next_state;
         end
     end
 
-    always @ (state) begin
+    always @ (state or unstop) begin
         case (state)
             3'b000: begin
                 next_state <= isHalt ? 3'b110 : 3'b001;
@@ -70,20 +69,20 @@ module control (clk, rst, unstop, opcode, func, brOp, aluOp, BSel, wrRegSel, mem
                 // EXECUTE INSTRUCTION
             end
             3'b011: begin
-                next_state <= isHalt ? 3'b110 : 3'b100;
+                next_state <= 3'b100;
                 // MEMORY ACCESS
             end
             3'b100: begin
-                next_state <= isHalt ? 3'b110 : 3'b101;
+                next_state <= 3'b101;
                 // MEMORY ACCESS
             end
             3'b101: begin
-                next_state <= isHalt ? 3'b110 : 3'b000;
+                next_state <= 3'b000;
                 // WRITE BACK
                 // INC PC
             end
             3'b110: begin
-                next_state <= 3'b110;
+                next_state <= unstop ? 3'b101 : 3'b110;
                 // HALT STATE
             end
             3'b111: begin

@@ -5,9 +5,9 @@ module program_counter #(parameter N = 32) (clk, rst, enable, pc, next_pc);
     output reg [N-1:0] pc;
     input [N-1:0] next_pc;
     
-    initial begin
-        pc <= 0;
-    end
+//    initial begin
+//        pc <= 0;
+//    end
 
 
     always @(posedge clk) begin
