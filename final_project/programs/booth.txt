@@ -1,104 +1,57 @@
-# Registers used:
-# R1: Multiplicand (M)
-# R2: Multiplier (Q)
-# R3: Accumulator (A)
-# R4: Counter (initialized to 32 for 32-bit multiplication)
-# R5: Q-1 bit
-# R6: Temporary register
-# R7: LSB mask (1)
-# R8: Register for shift amount
-# R9: High part of result (A)
-# R10: Low part of result (Q)
-# R11: Temporary for comparisons
+addi $1, $0, 10        // Multiplicand (A)
+addi $2, $0, 20        // Multiplier (y)
+addi $3, $0, 32       // Bit width
+move $10, $3          // Counter for loop (no_of_bits)
+addi $11, $3, -1      // no_of_bits - 1 for shift
+addi $4, $0, 0        // A = 0
+addi $5, $0, 0        // q(-1) = 0
+andi $7, $2, 1        // Last bit of y ($2)
+sub  $8, $7, $5       // Compare last bit of y and q(-1)
+bz   $8, 6            //  If $8 == 0, jump to shift
+bpl  $8, 3            //  # If $8 > 0, do subtraction
+add  $4, $4, $1       //    # Add multiplicand if case (01)
+br    2               //   Always jump to shift after operation
+sub  $4, $4, $1       //    # Subtract multiplicand (case 10)
+andi $6, $4, 1        //    # Get last bit of A
+srli  $4, $4, 1       //     # Logical shift-right A
+srli  $2, $2, 1       //     # Logical shift-right y
+sl  $6, $6, $11     //      # Add last A bit as first for y
+add  $2, $2, $6       // Merge into new y
+move $5, $7           // Update q(-1) = last bit of y
+subi $10, $10, 1      // Decrement counter
+bpl  $10, -14         // Continue loop if $10 > 0
+sli  $4, $4, 32      //  Shift A left to concatenate
+add  $4, $4, $2       // Merge into final result
+halt                  //  Infinite loop to halt
 
-# Initialize registers
-ADDI R4, R0, #32        # Set counter to 32 (for 32-bit numbers)
-ADDI R5, R0, #0         # Initialize Q-1 to 0
-ADDI R3, R0, #0         # Initialize accumulator to 0
-ADDI R7, R0, #1         # R7 = 1 (for masking LSB)
-ADDI R8, R0, #1         # R8 = 1 (for shifts)
 
-CHECK_BITS:
-    # Get Q0 (LSB of multiplier)
-    ANDI R6, R2, #1     # R6 = Q0
-    
-    # Compare Q0 and Q-1
-    XOR R11, R6, R5     # R11 = Q0 XOR Q-1
-    BZ R11, DO_SHIFT    # If Q0 = Q-1, just shift
-    
-    # Q0 ≠ Q-1
-    BZ R6, ADD_M        # If Q0 = 0 (and Q-1 = 1), add M
-    
-    # Q0 = 1 and Q-1 = 0, subtract M
-    SUB R3, R3, R1      # A = A - M
-    BR DO_SHIFT
-
-ADD_M:
-    ADD R3, R3, R1      # A = A + M
-
-DO_SHIFT:
-    # Save LSB of Q before shift
-    ANDI R5, R2, #1     # New Q-1 = old Q0
-    
-    # Arithmetic right shift for A and Q
-    MOVE R11, R3        # Save sign bit of A
-    SRA R3, R3, R8      # Shift A right arithmetic
-    SRA R2, R2, R8      # Shift Q right arithmetic
-    
-    # Decrement counter
-    SUBI R4, R4, #1     # Counter--
-    BZ R4, DONE         # If counter = 0, done
-    BR CHECK_BITS       # Otherwise continue
-
-DONE:
-    # Store 64-bit result (A:Q)
-    MOVE R9, R3         # High 32 bits (A)
-    MOVE R10, R2        # Low 32 bits (Q)
-    HALT
-
-######################################
+###################
 
 
 # Initialize registers
-000001 00100 00000 0000000000100000   # ADDI R4, R0, #32        # Set counter to 32 (for 32-bit numbers)
-000001 00101 00000 0000000000000000   # ADDI R5, R0, #0         # Initialize Q-1 to 0
-000001 00011 00000 0000000000000000   # ADDI R3, R0, #0         # Initialize accumulator to 0
-000001 00111 00000 0000000000000001   # ADDI R7, R0, #1         # R7 = 1 (for masking LSB)
-000001 01000 00000 0000000000000001   # ADDI R8, R0, #1         # R8 = 1 (for shifts)
-
-# CHECK_BITS:
-000100 00110 00010 0000000000000001   # ANDI R6, R2, #1         # Get Q0 (LSB of multiplier) into R6
-
-# Compare Q0 and Q-1
-000000 01011 00110 00101 000000 0 0110 # XOR R11, R6, R5        # R11 = Q0 XOR Q-1
-110011 01011 00000000000000100          # BZ R11, DO_SHIFT       # If Q0 = Q-1, just shift
-
-# Q0 ≠ Q-1
-110011 00110 0000000000000010          # BZ R6, ADD_M           # If Q0 = 0 (and Q-1 = 1), add M
-
-# Q0 = 1 and Q-1 = 0, subtract M
-000000 00011 00011 00001 000000 0 0010 # SUB R3, R3, R1         # A = A - M
-110100 000000000000000000000010        # BR DO_SHIFT
-
-# ADD_M:
-000000 00011 00011 00001 000000 0 0001 # ADD R3, R3, R1         # A = A + M
-
-# DO_SHIFT:
-000100 00101 00010 0000000000000001   # ANDI R5, R2, #1         # New Q-1 = old Q0
-
-# Arithmetic right shift for A and Q
-010001 01011 00011 0000000000000000   # MOVE R11, R3            # Save sign bit of A
-000000 00011 01000 00011 000000 0 1011 # SRA R3, R3, R8         # Shift A right arithmetic
-000000 00010 01000 00010 000000 0 1011 # SRA R2, R2, R8         # Shift Q right arithmetic
-
-# Decrement counter
-000010 00100 00100 0000000000000001   # SUBI R4, R4, #1         # Counter--
-110011 00100 0000000000000010         # BZ R4, DONE             # If counter = 0, done
-110100 1111111111110011		      # BR CHECK_BITS           # Otherwise continue
-
-# DONE:
-010001 01001 00011 0000000000000000   # MOVE R9, R3             # High 32 bits (A)
-010001 01010 00010 0000000000000000   # MOVE R10, R2            # Low 32 bits (Q)
-011110 00000000000000000000000000     # HALT
-
+000001 00000 00001 0000000000001010   # addi $1, $0, #10       # Multiplicand (A)
+000001 00000 00010 0000000000010100   # addi $2, $0, #20       # Multiplier (y)
+000001 00000 00011 0000000000100000   # addi $3, $0, #32       # Bit width
+010001 00011 01010 0000000000000000   # move $10, $3           # Counter for loop (no_of_bits)
+000001 00011 01011 1111111111111111   # addi $11, $3, #-1      # no_of_bits - 1 for shift
+000001 00000 00100 0000000000000000   # addi $4, $0, #0        # A = 0
+000001 00000 00101 0000000000000000   # addi $5, $0, #0        # q(-1) = 0
+000100 00010 00111 0000000000000001   # andi $7, $2, #1        # Last bit of y ($2)
+000000 00111 00101 01000 000000 0 0010 # sub  $8, $7, $5       # Compare last bit of y and q(-1)
+110011 01000 0000000000000110         # bz $8, #6             # If $8 == 0, jump to shift
+110010 01000 0000000000000011         # bpl $8, #3            # If $8 > 0, do subtraction
+000000 00100 00001 00100 000000 0 0000 # add $4, $4, $1       # Add multiplicand if case (01)
+110100 0000000000000010               # br #2                 # Always jump to shift after operation
+000000 00100 00001 00100 000000 0 0010 # sub $4, $4, $1       # Subtract multiplicand (case 10)
+000100 00100 00110 0000000000000001   # andi $6, $4, #1       # Get last bit of A
+001010 00100 00100 0000000000000001   # srli $4, $4, #1       # Logical shift-right A
+001010 00010 00010 0000000000000001   # srli $2, $2, #1       # Logical shift-right y
+000000 00110 01011 00010 000000 1 0001 # sl $6, $6, $11       # Add last A bit as first for y
+000000 00010 00110 00010 000000 0 0101 # add $2, $2, $6       # Merge into new y
+010001 00111 00101 0000000000000000   # move $5, $7           # Update q(-1) = last bit of y
+000010 01010 01010 1111111111111111   # subi $10, $10, #1     # Decrement counter
+110010 01010 1111111111110010         # bpl $10, #-14         # Continue loop if $10 > 0
+000001 00000 00100 0010000000000000   # sli $4, $4, #32       # Shift A left to concatenate
+000000 00100 00010 00100 000000 0 0101 # add $4, $4, $2       # Merge into final result
+011110 00000000000000000000000000      # halt                  # Infinite loop to halt
 
